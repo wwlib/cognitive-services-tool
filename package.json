@@ -1,0 +1,71 @@
+{
+  "name": "cognitive-services-tool",
+  "version": "0.1.0",
+  "description": "A tool for testing and validating cognitive services like ASR/STT, NLU, TTS (google, Microsoft, amazon) and Graphs (neo4j), etc.",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "docs": "gulp typedoc",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "tsc -v && yarn build && electron .",
+    "start-watch": "yarn build && concurrently \"yarn watch\" \"electron .\" ",
+    "debug": "tsc -v && yarn build && electron . --debug",
+    "restart": "electron .",
+    "version": "./version.sh $npm_package_version",
+    "test-version": "./version.sh $npm_package_version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wwlib/cognitive-services-tool.git"
+  },
+  "author": "Andrew Rapo <andrew@wwlib.org> (http://wwlib.github.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wwlib/cognitive-services-tool/issues"
+  },
+  "homepage": "https://github.com/wwlib/cognitive-services-tool#readme",
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node-fetch": "^2.1.2",
+    "@types/pubsub-js": "^1.5.18",
+    "@types/react": "^16.4.7",
+    "@types/react-bootstrap": "^0.32.11",
+    "@types/react-dom": "^16.0.6",
+    "chai": "^4.1.2",
+    "concurrently": "^3.6.1",
+    "gulp": "^3.9.1",
+    "gulp-typedoc": "^2.2.0",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "blob-to-buffer": "^1.2.8",
+    "classnames": "^2.2.6",
+    "defaultcss": "^1.1.1",
+    "electron": "^2.0.5",
+    "electron-reload": "^1.2.5",
+    "ensureDir": "^1.0.6",
+    "jsonfile": "^4.0.0",
+    "node-fetch": "^2.2.0",
+    "os": "^0.1.1",
+    "osenv": "^0.1.5",
+    "performance-now": "^2.1.0",
+    "pngjs": "^3.3.3",
+    "prettyjson": "^1.2.1",
+    "react": "^16.4.1",
+    "react-bootstrap": "^0.32.1",
+    "react-dom": "^16.4.1",
+    "react-draggable": "^3.0.5",
+    "react-easy-chart": "^1.0.0",
+    "react-password-mask": "^3.3.1",
+    "react-select": "^2.0.0",
+    "uuid": "^3.3.2",
+    "yargs": "^12.0.1"
+  }
+}

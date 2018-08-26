@@ -1,0 +1,123 @@
+#appInfoPanel {
+  position: absolute;
+  background-color: lightblue;
+  top: 60px;
+  left: 10px;
+}
+
+.app-panel {
+    z-index: 200;
+    position: absolute;
+    /* right: 10px; */
+    width: 1024px;
+    top: 60px;
+    padding: 6px;
+    background-color: #f7f7f7;
+}
+
+#appButtons {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    padding: 6px;
+    background-color: grey;
+    color: white;
+}
+
+/* Global variables */
+
+:root {
+	--color-light-gray: hsl(220, 10%, 85%);
+	--color-red: hsl(0, 80%, 48%);
+	--color-yellow: gold;
+	--color-green: hsl(85, 90%, 37%);
+	--color-orange: hsl(30, 100%, 50%);
+	--color-blue: hsl(210, 80%, 45%);
+	--color-purple: purple;
+
+	--top-bar-height: 80px;
+}
+
+html {
+	margin: 0;
+	padding: 0;
+	overflow-y:scroll;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: "Lato", sans-serif;
+	/*padding-top:30px;*/
+  background-color: #CFCFCF;
+
+}
+
+textarea {
+	width: 100%;
+}
+
+/***************************
+Top Navigation Bar
+****************************/
+
+.topNav {
+	margin: 0;
+	padding: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--top-bar-height);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.topButtons {
+	width: calc(100% - var(--side-bar-width));
+	background-color: #CFCFCF;
+	display: flex;
+	justify-content: space-between;
+}
+
+.topLeftButtons {
+	height: 100%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.topRightButtons {
+	height: 100%;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.topRightButtons > *{
+	margin-right: 20px;
+}
+
+.topLeftButtons > * {
+	margin-left: 20px;
+}
+
+
+/* Disable selection highlight on drag. */
+
+canvas {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Unsure what this is, ask Hiya*/
+
+@media screen and (max-height: 450px) {
+    .sideNav {padding-top: 20px;}
+    .sideNav a {font-size: 18px;}
+}
