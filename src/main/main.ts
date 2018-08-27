@@ -11,7 +11,7 @@ let mainWindow: Electron.BrowserWindow | undefined;
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1400,
+    width: 1425,
     height: 900,
   });
 

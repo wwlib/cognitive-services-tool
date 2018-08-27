@@ -64,7 +64,7 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
         ]
 
         return  <Draggable handle=".handle">
-                    <div className="app-panel well" id="appSettingsPanel" ref="appSettingsPanel">
+                    <div className="app-panel well" id="appSettingsPanel">
                     <Titlebar
                         draggable={true}
                         handleClick={this.handleClick.bind(this)}

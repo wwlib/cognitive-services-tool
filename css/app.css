@@ -1,18 +1,51 @@
-#appInfoPanel {
+.app-panel {
   position: absolute;
-  background-color: lightblue;
+  padding: 6px;
+  background-color: #f7f7f7;
+  width: 1024px;
   top: 60px;
   left: 10px;
+  z-index: 100;
 }
 
-.app-panel {
-    z-index: 200;
-    position: absolute;
-    /* right: 10px; */
-    width: 1024px;
-    top: 60px;
-    padding: 6px;
-    background-color: #f7f7f7;
+.app-panel textarea {
+    resize: none;
+}
+
+.panel-buttons {
+    padding-top: 6px;
+}
+
+#appSettingsPanel {
+  top: 100px;
+}
+
+#asrPanel {
+    top: 120px;
+    left: 10px;
+    width: 340px;
+    height: 340px;
+}
+
+#nluPanel {
+    top: 120px;
+    left: 360px;
+    width: 340px;
+    height: 340px;
+}
+
+#ttsPanel {
+    top: 120px;
+    left: 710px;
+    width: 340px;
+    height: 340px;
+}
+
+#graphPanel {
+    top: 120px;
+    left: 1060px;
+    width: 340px;
+    height: 340px;
 }
 
 #appButtons {

@@ -5,6 +5,10 @@ import AppSettings from '../model/AppSettings';
 import TopNav from './TopNav';
 import AppSettingsPanel from './AppSettingsPanel';
 import WindowComponent from '../model/WindowComponent';
+import ASRPanel from './ASRPanel';
+import NLUPanel from './NLUPanel';
+import TTSPanel from './TTSPanel';
+import GraphPanel from './GraphPanel';
 
 const {dialog, shell} = require('electron').remote;
 
@@ -108,12 +112,27 @@ export default class Application extends React.Component < ApplicationProps, App
         }
     }
 
+    onPanelClick(event: any): void {
+        let nativeEvent: any = event.nativeEvent;
+        console.log(`onPanelClick: `, nativeEvent.target.id);
+        switch ( nativeEvent.target.id) {
+            case 'nluSubmit':
+                break;
+        }
+    }
+
     layout(): any {
         let layout;
         let appSettingsPanel: JSX.Element | null = this.state.showAppSettingsPanel ? <AppSettingsPanel clickHandler={this.onAppSettingsClick.bind(this)} changeHandler={this.onAppSettingsInputChange.bind(this)} appSettings={this.props.model.appSettings}/> : null;
         layout = <div>
             <TopNav  clickHandler={this.onTopNavClick.bind(this)} />
             {appSettingsPanel}
+            <div className="panelContainer">
+                <ASRPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <NLUPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <TTSPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <GraphPanel clickHandler={this.onPanelClick.bind(this)}/>
+            </div>
         </div>
         return layout;
     }
