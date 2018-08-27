@@ -117,9 +117,9 @@ export default class Titlebar extends React.Component<TitlebarProps, TitlebarSta
         return (
             <div className={classes} id="titlebar" onClick={this.props.handleClick}>
             	<div className="titlebar-stoplight">
-            		<div onDoubleClick={this.handleNop} onClick={this.props.handleClose} className="titlebar-close"></div>
-            		<div onDoubleClick={this.handleNop} onClick={this.props.handleMinimize} className="titlebar-minimize"></div>
-            		<div onDoubleClick={this.handleNop} onClick={this.handleMaximize.bind(this)} className="titlebar-fullscreen"></div>
+            		<div id="titlebar-close" onDoubleClick={this.handleNop} onClick={this.props.handleClose} className="titlebar-close"></div>
+            		<div id="titlebar-minimize" onDoubleClick={this.handleNop} onClick={this.props.handleMinimize} className="titlebar-minimize"></div>
+            		<div id="titlebar-fullscreen" onDoubleClick={this.handleNop} onClick={this.handleMaximize.bind(this)} className="titlebar-fullscreen"></div>
             	</div>
                 {this.props.children}
             </div>

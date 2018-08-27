@@ -1,61 +1,119 @@
 import * as React from "react";
 import * as ReactBootstrap from "react-bootstrap";
 import Model from '../model/Model';
+import AppSettings from '../model/AppSettings';
 import TopNav from './TopNav';
-import AppInfoPanel from './AppInfoPanel';
+import AppSettingsPanel from './AppSettingsPanel';
+import WindowComponent from '../model/WindowComponent';
+
+const {dialog, shell} = require('electron').remote;
 
 export interface ApplicationProps { model: Model }
 export interface ApplicationState {
-    showAppInfoPanel: boolean
+    showAppSettingsPanel: boolean,
+    appSettings: AppSettings
 }
 
 export default class Application extends React.Component < ApplicationProps, ApplicationState > {
 
     componentWillMount() {
         this.setState({
-            showAppInfoPanel: false
+            showAppSettingsPanel: false
          });
     }
 
     componentDidMount() {
         // console.log(`Application: componentDidMount`);
-        this.props.model.addPanelWithId('appInfoPanel', 10, 60);
+        WindowComponent.addWindowWithId('appSettingsPanel', 10, 60);
     }
 
     onTopNavClick(event: any): void {
         let nativeEvent: any = event.nativeEvent;
         switch ( nativeEvent.target.id) {
-            case 'appInfo':
-                console.log(`onTopNavClick: appInfo`);
-                this.setState({showAppInfoPanel: this.props.model.togglePanelOpenedWithId('appInfoPanel')});
-                this.props.model.bringPanelToFront('appInfoPanel');
+            case 'appSettings':
+                WindowComponent.bringWindowToFrontWithId('appSettingsPanel');
+                this.setState({showAppSettingsPanel: true});
                 break;
-
         }
     }
 
-    handlePageInputChange(event: any) {
+    onAppSettingsClick(event: any): void {
         let nativeEvent: any = event.nativeEvent;
-        console.log(`handlePageInputChange: `, nativeEvent.target.id)
-        switch(nativeEvent.target.id) {
+        switch ( nativeEvent.target.id ) {
+            case 'titlebar':
+                WindowComponent.bringWindowToFrontWithId('appSettingsPanel');
+                break;
+            case 'titlebar-close':
+                WindowComponent.closeWithId('appSettingsPanel');
+                this.setState({showAppSettingsPanel: false});
+                break;
+            case 'saveSettings':
+                this.props.model.saveAppSettings();
+                break;
+            case 'reloadSettings':
+                this.props.model.reloadAppSettings();
+                break;
+            case 'showSettings':
+                if (this.props.model.appSettings.userDataPath) {
+                    shell.showItemInFolder(this.props.model.appSettings.userDataPath);
+                }
+                break;
         }
+    }
+
+    onAppSettingsInputChange(event: any) {
+        let nativeEvent: any = event.nativeEvent;
+        let appSettings: AppSettings = this.props.model.appSettings;
+        switch(nativeEvent.target.name) {
+            case 'nluLUIS_endpoint':
+                appSettings.nluLUIS_endpoint = nativeEvent.target.value;
+                break;
+            case 'nluLUIS_appId':
+                appSettings.nluLUIS_appId = nativeEvent.target.value;
+                break;
+            case 'nluLUIS_subscriptionKey':
+                appSettings.nluLUIS_subscriptionKey = nativeEvent.target.value;
+                break;
+            case 'nluDialogflow_clientToken':
+                appSettings.nluDialogflow_clientToken = nativeEvent.target.value;
+                break;
+            case 'nluDialogflow_projectId':
+                appSettings.nluDialogflow_projectId = nativeEvent.target.value;
+                break;
+            case 'nluDialogflow_privateKey':
+                appSettings.nluDialogflow_privateKey = nativeEvent.target.value;
+                break;
+            case 'nluDialogflow_clientEmail':
+                appSettings.nluDialogflow_clientEmail = nativeEvent.target.value;
+                break;
+            case 'neo4j_url':
+                appSettings.neo4j_url = nativeEvent.target.value;
+                break;
+            case 'neo4j_user':
+                appSettings.neo4j_user = nativeEvent.target.value;
+                break;
+            case 'neo4j_password':
+                appSettings.neo4j_password = nativeEvent.target.value;
+                break;
+        }
+        this.setState({appSettings: appSettings});
     }
 
     onClosePanel(id: string): void {
-        this.props.model.closePanelWithId(id);
+        WindowComponent.closeWithId('appSettingsPanel');
         switch(id) {
-            case 'appInfoPanel':
-                this.setState({showAppInfoPanel: false});
+            case 'appSettingsPanel':
+                this.setState({showAppSettingsPanel: false});
                 break;
         }
     }
 
     layout(): any {
         let layout;
-        let appInfoPanel: JSX.Element | null = this.state.showAppInfoPanel ? <AppInfoPanel id='appInfoPanel' appInfo={this.props.model.appInfo} model={this.props.model} onClosePanel={this.onClosePanel.bind(this)}/> : null;
+        let appSettingsPanel: JSX.Element | null = this.state.showAppSettingsPanel ? <AppSettingsPanel clickHandler={this.onAppSettingsClick.bind(this)} changeHandler={this.onAppSettingsInputChange.bind(this)} appSettings={this.props.model.appSettings}/> : null;
         layout = <div>
             <TopNav  clickHandler={this.onTopNavClick.bind(this)} />
-            {appInfoPanel}
+            {appSettingsPanel}
         </div>
         return layout;
     }
