@@ -35,7 +35,6 @@ export default class Model extends EventEmitter {
     }
 
     saveAppSettings(): void {
-        console.log(`saveAppSettings: `);
         this.appSettings.save((err: any) => {
             if (err) {
                 console.log(`Model: Error saving appSettings: `, err);

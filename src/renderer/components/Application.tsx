@@ -9,26 +9,44 @@ import ASRPanel from './ASRPanel';
 import NLUPanel from './NLUPanel';
 import TTSPanel from './TTSPanel';
 import GraphPanel from './GraphPanel';
+import LogPanel from './LogPanel';
 
+import NLUController, {
+    NLUIntentAndEntities, NLUData
+} from '../model/NLUController';
+import LUISController from '../luis/LUISController';
+import DialogflowControllerV1 from '../dialogflow/DialogflowControllerV1';
+
+const prettyjson = require('prettyjson');
 const {dialog, shell} = require('electron').remote;
 
 export interface ApplicationProps { model: Model }
 export interface ApplicationState {
     showAppSettingsPanel: boolean,
-    appSettings: AppSettings
+    appSettings: AppSettings,
+    NLUResult: string,
+    log: string
 }
 
 export default class Application extends React.Component < ApplicationProps, ApplicationState > {
 
+    public dialogflowControllerV1 = new DialogflowControllerV1();
+    public luisController = new LUISController();
+    public sessionId: string = `app_${Math.floor(Math.random() * 10000)}`;
+
     componentWillMount() {
         this.setState({
-            showAppSettingsPanel: false
+            showAppSettingsPanel: false,
+            NLUResult: '',
+            log: ''
          });
     }
 
     componentDidMount() {
         // console.log(`Application: componentDidMount`);
         WindowComponent.addWindowWithId('appSettingsPanel', 10, 60);
+        this.dialogflowControllerV1.config = this.props.model.appSettings;
+        this.luisController.config = this.props.model.appSettings;
     }
 
     onTopNavClick(event: any): void {
@@ -63,6 +81,11 @@ export default class Application extends React.Component < ApplicationProps, App
                 }
                 break;
         }
+    }
+
+    onDropdownChange(selectedOption: any): void {
+        this.props.model.appSettings.nluDefault = selectedOption;
+        this.setState({appSettings: this.props.model.appSettings});
     }
 
     onAppSettingsInputChange(event: any) {
@@ -112,26 +135,107 @@ export default class Application extends React.Component < ApplicationProps, App
         }
     }
 
-    onPanelClick(event: any): void {
+    //// NLU
+
+    getLaunchIntent(asr: string): Promise<NLUData> {
+        let nluDefault: string = 'none';
+        if (this.props.model.appSettings && this.props.model.appSettings.nluDefault) {
+            nluDefault = this.props.model.appSettings.nluDefault.value;
+        }
+
+        return this.getIntent(asr, ['launch'], nluDefault);
+    }
+
+    getIntent(asr: string, contexts: string[], nluType: string): Promise<NLUData> {
+        console.log(`Model: getIntent: asr: ${asr}, contexts: `, contexts, nluType);
+        return new Promise((resolve, reject) => {
+            let query: string = asr;
+            let nluController: NLUController | undefined = undefined;
+            if (nluType == 'luis') {
+                nluController = this.luisController;
+            } else if (nluType == 'dialogflowv1') {
+                nluController = this.dialogflowControllerV1;
+            }
+            // else if (nluType == 'dialogflowv2') {
+            //     nluController = this.dialogflowControllerV2;
+            // }
+
+            if (nluController) {
+                let context: string = '';
+                if (contexts) {
+                    context = contexts[0];
+                }
+                nluController.getIntentAndEntities(query, 'en-US', context, this.sessionId)
+                    .then((intentAndEntities: NLUIntentAndEntities) => {
+                        let nluData: NLUData = {
+                           nluType: nluType,
+                           asr: asr,
+                           intentAndEntities: intentAndEntities
+                       }
+                       console.log(`Model: getIntent: nluData`, nluData);
+                       resolve(nluData);
+                    })
+                    .catch((err: any) => {
+                        reject(err);
+                    });
+            } else {
+                let nluData: NLUData = {
+                    nluType: nluType,
+                    asr: asr,
+                    intentAndEntities: {
+                        intent: '',
+                        entities: {},
+                        result: {}
+                    }
+
+                }
+                console.log(`Model: getIntent: NO NLU DEFINED: nluData`, nluData);
+                resolve(nluData)
+            }
+        });
+    }
+
+    ////
+
+    onPanelClick(event: any, data: any): void {
         let nativeEvent: any = event.nativeEvent;
         console.log(`onPanelClick: `, nativeEvent.target.id);
         switch ( nativeEvent.target.id) {
+            case 'utterance':
             case 'nluSubmit':
+                let asr: string = data.utterance;
+                this.getLaunchIntent(asr)
+                    .then((nluData: NLUData) => {
+                        if (nluData && nluData.intentAndEntities) {
+                            let launchIntent: string = nluData.intentAndEntities.intent;
+                            let entities: string = prettyjson.render(nluData.intentAndEntities.entities, { noColor: true });
+                            console.log(`Model: onASR result: launchIntent`, launchIntent, entities, nluData);
+                            console.log(nluData.intentAndEntities.entities, entities);
+                            let resultFormatted: string = prettyjson.render(nluData.intentAndEntities.result, { noColor: true });
+                            this.setState({ NLUResult: `${launchIntent}\n${entities}`, log: `${resultFormatted}\n\n****\n\n${this.state.log}` });
+                        }
+                    })
+                    .catch((err: any) => {
+                        console.log(`Model: onASR: error: `, err);
+                    });
                 break;
+            case 'clearLog':
+                this.setState({ log: '' })
         }
     }
 
     layout(): any {
         let layout;
-        let appSettingsPanel: JSX.Element | null = this.state.showAppSettingsPanel ? <AppSettingsPanel clickHandler={this.onAppSettingsClick.bind(this)} changeHandler={this.onAppSettingsInputChange.bind(this)} appSettings={this.props.model.appSettings}/> : null;
+        let appSettingsPanel: JSX.Element | null = this.state.showAppSettingsPanel ? <AppSettingsPanel clickHandler={this.onAppSettingsClick.bind(this)} changeHandler={this.onAppSettingsInputChange.bind(this)} dropdownHandler={this.onDropdownChange.bind(this)} appSettings={this.props.model.appSettings}/> : null;
         layout = <div>
             <TopNav  clickHandler={this.onTopNavClick.bind(this)} />
             {appSettingsPanel}
             <div className="panelContainer">
                 <ASRPanel clickHandler={this.onPanelClick.bind(this)}/>
-                <NLUPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <NLUPanel clickHandler={this.onPanelClick.bind(this)} dropdownHandler={this.onDropdownChange.bind(this)} appSettings={this.props.model.appSettings} NLUResult={this.state.NLUResult}/>
                 <TTSPanel clickHandler={this.onPanelClick.bind(this)}/>
                 <GraphPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <LogPanel clickHandler={this.onPanelClick.bind(this)} log={this.state.log} />
             </div>
         </div>
         return layout;

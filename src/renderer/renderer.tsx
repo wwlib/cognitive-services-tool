@@ -13,8 +13,9 @@ if (argy.debug) {
 }
 
 let model: Model = new Model();
-
-render(
-    <Application model={model}/>,
-    document.getElementById('app')
-);
+model.on('ready', () => {
+    render(
+        <Application model={model} />,
+        document.getElementById('app')
+    );
+});

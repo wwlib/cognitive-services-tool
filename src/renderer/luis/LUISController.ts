@@ -107,12 +107,14 @@ export default class LUISController extends NLUController {
                 .then((response: LUISResponse) => {
                     let intentAndEntities: NLUIntentAndEntities = {
                         intent: '',
-                        entities: undefined
+                        entities: undefined,
+                        result: response
                     }
                     if (response && response.topScoringIntent) {
                         intentAndEntities = {
                             intent: response.topScoringIntent.intent,
-                            entities: this.getEntitiesWithResponse(response)
+                            entities: this.getEntitiesWithResponse(response),
+                            result: response
                         }
                     }
                     resolve(intentAndEntities);

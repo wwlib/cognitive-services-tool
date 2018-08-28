@@ -7,8 +7,13 @@ const jsonfile = require('jsonfile');
 let configPath = path.resolve(osenv.home(), ".storybookauthor");
 let configFile = path.resolve(configPath, "storybookauthor.json");
 
+export type DefaultNLUSetting = {
+    value: string;
+    label: string
+}
+
 export interface AppSettingsOptions {
-    nluDefault: string;
+    nluDefault: DefaultNLUSetting;
     nluLUIS_endpoint: string;
     nluLUIS_appId: string;
     nluLUIS_subscriptionKey: string;
@@ -25,8 +30,14 @@ export interface AppSettingsOptions {
 export default class AppSettings extends EventEmitter {
 
     static DEFAULT_USER_DATA_PATH: string = path.resolve(configPath, "user");
+    static NLU_OPTIONS: any[] = [
+        {value: 'none', label: 'none'},
+        {value: 'luis', label: 'LUIS'},
+        {value: 'dialogflowv1', label: 'DialogflowV1'},
+        {value: 'dialogflowv2', label: 'DialogflowV2'},
+    ]
 
-    public nluDefault: string = '';
+    public nluDefault: DefaultNLUSetting = {value: 'none', label: 'none'};
     public nluLUIS_endpoint: string = '';
     public nluLUIS_appId: string = '';
     public nluLUIS_subscriptionKey: string = '';
@@ -44,7 +55,7 @@ export default class AppSettings extends EventEmitter {
     constructor(options?: AppSettingsOptions) {
         super();
         options = options || {
-            nluDefault: '',
+            nluDefault: {value: 'none', label: 'none'},
             nluLUIS_endpoint: 'nluLUIS_endpoint',
             nluLUIS_appId: 'nluLUIS_appId',
             nluLUIS_subscriptionKey: '',

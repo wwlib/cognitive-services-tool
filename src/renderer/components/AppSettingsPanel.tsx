@@ -9,7 +9,7 @@ import AppSettings from '../model/AppSettings';
 import Model from '../model/Model';
 import WindowComponent from '../model/WindowComponent';
 
-export interface AppSettingsPanelProps { clickHandler: any, changeHandler: any, appSettings: AppSettings }
+export interface AppSettingsPanelProps { clickHandler: any, changeHandler: any, dropdownHandler: any, appSettings: AppSettings }
 export interface AppSettingsPanelState { }
 
 export default class AppSettingsPanel extends React.Component<AppSettingsPanelProps, AppSettingsPanelState> {
@@ -33,7 +33,8 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
     }
 
     handleNluDefaultChange(selectedOption: any) {
-        console.log(`handleEndpointChange: `, selectedOption);
+        console.log(`AppSettingsPanel: handleNluDefaultChange: `, selectedOption);
+        this.props.dropdownHandler(selectedOption);
     }
 
     handleClick(event: any): void {
@@ -57,11 +58,7 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
     }
 
     render() {
-        let nluOptions: any[] = [
-            {value: 'none', label: 'none'},
-            {value: 'luis', label: 'LUIS'},
-            {value: 'dialogflow', label: 'Dialogflow'}
-        ]
+        let nluOptions: any[] = AppSettings.NLU_OPTIONS;
 
         return  <Draggable handle=".handle">
                     <div className="app-panel well" id="appSettingsPanel">
@@ -75,7 +72,7 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
                     </Titlebar>
                     <h4 className="pull-left handle" style={{marginBottom:20}}>App Settings</h4>
                     <div className="clearfix"></div>
-                    <ReactBootstrap.Table striped bordered condensed hover style = {{width: 900}}>
+                    <ReactBootstrap.Table condensed hover style = {{width: 900}}>
                         <tbody>
                             <tr><td>nluDefault:</td><td>
                             <Select name="nluDefault" value={this.props.appSettings.nluDefault} options={nluOptions} onChange={this.handleNluDefaultChange.bind(this)} style={{width: 300}} />
@@ -86,27 +83,27 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
                             </td></tr>
 
                             <tr><td>nluLUIS_appId:</td><td>
-                            <PasswordMask id="password" name="nluLUIS_appId" value={this.props.appSettings.nluLUIS_appId} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluLUIS_appId" value={this.props.appSettings.nluLUIS_appId} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>nluLUIS_subscriptionKey:</td><td>
-                            <PasswordMask id="password" name="nluLUIS_subscriptionKey" value={this.props.appSettings.nluLUIS_subscriptionKey} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluLUIS_subscriptionKey" value={this.props.appSettings.nluLUIS_subscriptionKey} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>nluDialogflow_clientToken:</td><td>
-                            <PasswordMask id="password" name="nluDialogflow_clientToken" value={this.props.appSettings.nluDialogflow_clientToken} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluDialogflow_clientToken" value={this.props.appSettings.nluDialogflow_clientToken} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>nluDialogflow_projectId:</td><td>
-                            <PasswordMask id="password" name="nluDialogflow_projectId" value={this.props.appSettings.nluDialogflow_projectId} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluDialogflow_projectId" value={this.props.appSettings.nluDialogflow_projectId} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>nluDialogflow_privateKey:</td><td>
-                            <PasswordMask id="password" name="nluDialogflow_privateKey" value={this.props.appSettings.nluDialogflow_privateKey} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluDialogflow_privateKey" value={this.props.appSettings.nluDialogflow_privateKey} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>nluDialogflow_clientEmail:</td><td>
-                            <PasswordMask id="password" name="nluDialogflow_clientEmail" value={this.props.appSettings.nluDialogflow_clientEmail} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="nluDialogflow_clientEmail" value={this.props.appSettings.nluDialogflow_clientEmail} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
 
                             <tr><td>neo4j_url:</td><td>
@@ -118,7 +115,7 @@ export default class AppSettingsPanel extends React.Component<AppSettingsPanelPr
                             </td></tr>
 
                             <tr><td>neo4j_password:</td><td>
-                            <PasswordMask id="password" name="neo4j_password" value={this.props.appSettings.neo4j_password} onChange={this.handleInputChange.bind(this)} style={{width: 300}} />
+                            <PasswordMask id="password" name="neo4j_password" value={this.props.appSettings.neo4j_password} onChange={this.handleInputChange.bind(this)} inputStyles={{width: '90%'}} />
                             </td></tr>
                         </tbody>
                     </ReactBootstrap.Table>

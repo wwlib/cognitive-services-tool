@@ -12,39 +12,55 @@
     resize: none;
 }
 
+.app-panel table {
+    border-style: hidden;
+}
+
+.app-panel td {
+    border-style: hidden;
+}
+
 .panel-buttons {
     padding-top: 6px;
 }
 
 #appSettingsPanel {
   top: 100px;
+  background-color: #f0f0f0;
 }
 
 #asrPanel {
-    top: 120px;
+    top: 80px;
     left: 10px;
     width: 340px;
     height: 340px;
 }
 
 #nluPanel {
-    top: 120px;
+    top: 80px;
     left: 360px;
     width: 340px;
     height: 340px;
 }
 
 #ttsPanel {
-    top: 120px;
+    top: 80px;
     left: 710px;
     width: 340px;
     height: 340px;
 }
 
 #graphPanel {
-    top: 120px;
+    top: 80px;
     left: 1060px;
     width: 340px;
+    height: 340px;
+}
+
+#logPanel {
+    top: 430px;
+    left: 10px;
+    width: 690px;
     height: 340px;
 }
 

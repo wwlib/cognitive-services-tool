@@ -1,6 +1,13 @@
 export type NLUIntentAndEntities = {
     intent: string;
     entities: any;
+    result: any;
+}
+
+export interface NLUData {
+    nluType: string;
+    asr: string;
+    intentAndEntities: NLUIntentAndEntities;
 }
 
 export default abstract class NLUController {

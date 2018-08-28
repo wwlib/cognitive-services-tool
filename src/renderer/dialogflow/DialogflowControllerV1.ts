@@ -111,25 +111,28 @@ export default class DialogflowControllerV1 extends NLUController {
     }
 
     getEntitiesWithResponse(response: any): any | undefined {
-        let entitiesObject: any = {
-            user: 'Someone',
-            userOriginal: 'Someone',
-            thing: 'that',
-            thingOriginal: 'that'
-        };
+        console.log(`DialogflowControllerV1: getEntitiesWithResponse: `, response);
+        let entitiesObject: any = {};
         let result: DialogflowResponseResult = response.result;
         let parameters;
         if (result && result.contexts && result.contexts[0]) {
-            parameters = result.contexts[0].parameters;
-            if (parameters) {
-                entitiesObject.user = parameters['user'] || entitiesObject.user;
-                entitiesObject.userOriginal = parameters['user.original'] || entitiesObject.userOriginal;
-                entitiesObject.thing = parameters['thing'] || entitiesObject.thing;
-                entitiesObject.thingOriginal = parameters['thing.original'] || entitiesObject.thingOriginal;
-            }
+            parameters = result.contexts[0];
+            let keys: string[] = Object.keys(parameters);
+            keys.forEach((entityKey: any) => {
+                let entityValue: string = parameters[entityKey];
+                if (entityValue) {
+                    entitiesObject[entityKey] = entityValue;
+                }
+            });
         } else if (result && result.parameters) {
-            entitiesObject.thing = result.parameters['thing'] || entitiesObject.thing;
-            entitiesObject.thingOriginal = result.parameters['thing'] || entitiesObject.thingOriginal;
+            parameters = result.parameters;
+            let keys: string[] = Object.keys(parameters);
+            keys.forEach((entityKey: any) => {
+                let entityValue: string = parameters[entityKey];
+                if (entityValue) {
+                    entitiesObject[entityKey] = entityValue;
+                }
+            });
         }
         return entitiesObject;
     }
@@ -143,7 +146,8 @@ export default class DialogflowControllerV1 extends NLUController {
                     let intent: string = metadata.intentName;
                     let intentAndEntities: NLUIntentAndEntities = {
                         intent: intent,
-                        entities: this.getEntitiesWithResponse(response)
+                        entities: this.getEntitiesWithResponse(response),
+                        result: result
                     }
                     resolve(intentAndEntities);
                 })
