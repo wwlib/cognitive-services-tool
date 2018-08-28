@@ -16,6 +16,7 @@ import NLUController, {
 } from '../model/NLUController';
 import LUISController from '../luis/LUISController';
 import DialogflowControllerV1 from '../dialogflow/DialogflowControllerV1';
+import DialogflowControllerV2 from '../dialogflow/DialogflowControllerV2';
 
 const prettyjson = require('prettyjson');
 const {dialog, shell} = require('electron').remote;
@@ -31,6 +32,7 @@ export interface ApplicationState {
 export default class Application extends React.Component < ApplicationProps, ApplicationState > {
 
     public dialogflowControllerV1 = new DialogflowControllerV1();
+    public dialogflowControllerV2 = new DialogflowControllerV2();
     public luisController = new LUISController();
     public sessionId: string = `app_${Math.floor(Math.random() * 10000)}`;
 
@@ -44,8 +46,9 @@ export default class Application extends React.Component < ApplicationProps, App
 
     componentDidMount() {
         // console.log(`Application: componentDidMount`);
-        WindowComponent.addWindowWithId('appSettingsPanel', 10, 60);
+        WindowComponent.addWindowWithId('appSettingsPanel', 200, 130); //TODO magic number
         this.dialogflowControllerV1.config = this.props.model.appSettings;
+        this.dialogflowControllerV2.config = this.props.model.appSettings;
         this.luisController.config = this.props.model.appSettings;
     }
 
@@ -151,14 +154,15 @@ export default class Application extends React.Component < ApplicationProps, App
         return new Promise((resolve, reject) => {
             let query: string = asr;
             let nluController: NLUController | undefined = undefined;
+
+            //TODO generalize this
             if (nluType == 'luis') {
                 nluController = this.luisController;
             } else if (nluType == 'dialogflowv1') {
                 nluController = this.dialogflowControllerV1;
+            } else if (nluType == 'dialogflowv2') {
+                nluController = this.dialogflowControllerV2;
             }
-            // else if (nluType == 'dialogflowv2') {
-            //     nluController = this.dialogflowControllerV2;
-            // }
 
             if (nluController) {
                 let context: string = '';
@@ -218,6 +222,14 @@ export default class Application extends React.Component < ApplicationProps, App
                     .catch((err: any) => {
                         console.log(`Model: onASR: error: `, err);
                     });
+
+                // this.dialogflowControllerV2.call('what time is it', 'en-US', 'launch', this.sessionId)
+                //     .then((result: any) => {
+                //         console.log(prettyjson.render(result, {}));
+                //     })
+                //     .catch((err: any) => {
+                //         console.log(`ERROR: dialogflowController\n`, err)
+                //     });
                 break;
             case 'clearLog':
                 this.setState({ log: '' })

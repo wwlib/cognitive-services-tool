@@ -25,7 +25,8 @@
 }
 
 #appSettingsPanel {
-  top: 100px;
+  top: 130px;
+  left: 200px;
   background-color: #f0f0f0;
 }
 

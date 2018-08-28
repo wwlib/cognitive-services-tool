@@ -7,13 +7,13 @@ const jsonfile = require('jsonfile');
 let configPath = path.resolve(osenv.home(), ".storybookauthor");
 let configFile = path.resolve(configPath, "storybookauthor.json");
 
-export type DefaultNLUSetting = {
+export type NLUSetting = {
     value: string;
     label: string
 }
 
 export interface AppSettingsOptions {
-    nluDefault: DefaultNLUSetting;
+    nluDefault: NLUSetting;
     nluLUIS_endpoint: string;
     nluLUIS_appId: string;
     nluLUIS_subscriptionKey: string;
@@ -37,7 +37,7 @@ export default class AppSettings extends EventEmitter {
         {value: 'dialogflowv2', label: 'DialogflowV2'},
     ]
 
-    public nluDefault: DefaultNLUSetting = {value: 'none', label: 'none'};
+    public nluDefault: NLUSetting = {value: 'none', label: 'none'};
     public nluLUIS_endpoint: string = '';
     public nluLUIS_appId: string = '';
     public nluLUIS_subscriptionKey: string = '';

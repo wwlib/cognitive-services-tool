@@ -10,6 +10,7 @@ electron
 git clone git@github.com:wwlib/cognitive-services-tool.git
 cd cognitive-services-tool
 yarn
+npm rebuild --runtime=electron --target=2.0.5 --disturl=https://atom.io/download/electron
 yarn start
 ```
 
