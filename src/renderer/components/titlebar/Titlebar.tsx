@@ -68,13 +68,13 @@ export default class Titlebar extends React.Component<TitlebarProps, TitlebarSta
     }
 
     componentDidMount() {
-        document.body.addEventListener('keydown', this._keyDownHandler);
-        document.body.addEventListener('keyup', this._keyUpHandler);
+        // document.body.addEventListener('keydown', this._keyDownHandler);
+        // document.body.addEventListener('keyup', this._keyUpHandler);
     }
 
     componentWillUnMount() {
-        document.body.removeEventListener('keydown', this._keyDownHandler);
-        document.body.removeEventListener('keyup', this._keyUpHandler);
+        // document.body.removeEventListener('keydown', this._keyDownHandler);
+        // document.body.removeEventListener('keyup', this._keyUpHandler);
     }
 
     handleKeyDown(e: any) {

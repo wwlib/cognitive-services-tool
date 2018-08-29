@@ -42,12 +42,17 @@ export default class Model extends EventEmitter {
         });
     }
 
-    reloadAppSettings(): void {
-        this.appSettings.load((err: any, obj: any) => {
-            if (err) {
-                console.log(`Model: Error reloading AppSettings.`);
-            }
-            this.emit('updateModel', this);
+    reloadAppSettings(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.appSettings.load((err: any, obj: any) => {
+                if (err) {
+                    console.log(`Model: Error reloading AppSettings.`);
+                    reject(`Model: Error reloading AppSettings.`);
+                } else {
+                    this.emit('updateModel', this);
+                    resolve(obj);
+                }
+            });
         });
     }
 

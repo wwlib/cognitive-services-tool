@@ -4,8 +4,8 @@ const ensureDir = require('ensureDir');
 const osenv = require('osenv');
 const jsonfile = require('jsonfile');
 
-let configPath = path.resolve(osenv.home(), ".storybookauthor");
-let configFile = path.resolve(configPath, "storybookauthor.json");
+let configPath = path.resolve(osenv.home(), ".wwlib");
+let configFile = path.resolve(configPath, "cognitive-services-tool.json");
 
 export type NLUSetting = {
     value: string;
@@ -13,18 +13,18 @@ export type NLUSetting = {
 }
 
 export interface AppSettingsOptions {
-    nluDefault: NLUSetting;
-    nluLUIS_endpoint: string;
-    nluLUIS_appId: string;
-    nluLUIS_subscriptionKey: string;
-    nluDialogflow_clientToken: string;
-    nluDialogflow_projectId: string;
-    nluDialogflow_privateKey: string;
-    nluDialogflow_clientEmail: string;
-    neo4j_url: string;
-    neo4j_user: string;
-    neo4j_password: string;
-    timestamp: number;
+    nluDefault?: NLUSetting;
+    nluLUIS_endpoint?: string;
+    nluLUIS_appId?: string;
+    nluLUIS_subscriptionKey?: string;
+    nluDialogflow_clientToken?: string;
+    nluDialogflow_projectId?: string;
+    nluDialogflow_privateKey?: string;
+    nluDialogflow_clientEmail?: string;
+    neo4j_url?: string;
+    neo4j_user?: string;
+    neo4j_password?: string;
+    timestamp?: number;
 }
 
 export default class AppSettings extends EventEmitter {
@@ -37,27 +37,32 @@ export default class AppSettings extends EventEmitter {
         {value: 'dialogflowv2', label: 'DialogflowV2'},
     ]
 
-    public nluDefault: NLUSetting = {value: 'none', label: 'none'};
-    public nluLUIS_endpoint: string = '';
-    public nluLUIS_appId: string = '';
-    public nluLUIS_subscriptionKey: string = '';
-    public nluDialogflow_clientToken: string = '';
-    public nluDialogflow_projectId: string = '';
-    public nluDialogflow_privateKey: string = '';
-    public nluDialogflow_clientEmail: string = '';
+    public nluDefault: NLUSetting | undefined = {value: 'none', label: 'none'};
+    public nluLUIS_endpoint: string | undefined = '';
+    public nluLUIS_appId: string | undefined = '';
+    public nluLUIS_subscriptionKey: string | undefined = '';
+    public nluDialogflow_clientToken: string | undefined = '';
+    public nluDialogflow_projectId: string | undefined = '';
+    public nluDialogflow_privateKey: string | undefined = '';
+    public nluDialogflow_clientEmail: string | undefined = '';
 
-    public neo4j_url: string = '';
-    public neo4j_user: string = '';
-    public neo4j_password: string = '';
+    public neo4j_url: string | undefined = '';
+    public neo4j_user: string | undefined = '';
+    public neo4j_password: string | undefined = '';
 
     private _timestamp: number = 0;
 
     constructor(options?: AppSettingsOptions) {
         super();
-        options = options || {
+        this.initWithData(options);
+    }
+
+    initWithData(options?: AppSettingsOptions): void {
+        options = options || {};
+        let defaultOptions: AppSettingsOptions =  {
             nluDefault: {value: 'none', label: 'none'},
-            nluLUIS_endpoint: 'nluLUIS_endpoint',
-            nluLUIS_appId: 'nluLUIS_appId',
+            nluLUIS_endpoint: '',
+            nluLUIS_appId: '',
             nluLUIS_subscriptionKey: '',
             nluDialogflow_clientToken: '',
             nluDialogflow_projectId: '',
@@ -68,23 +73,22 @@ export default class AppSettings extends EventEmitter {
             neo4j_password: '',
             timestamp: 0
         }
-        this.initWithData(options);
-    }
+        options = Object.assign(defaultOptions, options);
 
-    initWithData(data: AppSettingsOptions): void {
-        this.nluDefault = data.nluDefault;
-        this.nluLUIS_endpoint = data.nluLUIS_endpoint;
-        this.nluLUIS_appId = data.nluLUIS_appId;
-        this.nluLUIS_subscriptionKey = data.nluLUIS_subscriptionKey;
-        this.nluDialogflow_clientToken = data.nluDialogflow_clientToken;
-        this.nluDialogflow_projectId = data.nluDialogflow_projectId;
-        this.nluDialogflow_privateKey = data.nluDialogflow_privateKey;
-        this.nluDialogflow_clientEmail = data.nluDialogflow_clientEmail;
-        this.neo4j_url = data.neo4j_url;
-        this.neo4j_user = data.neo4j_user;
-        this.neo4j_password = data.neo4j_password;
+        console.log(`AppSettings: initWithData: `, options);
+        this.nluDefault = options.nluDefault;
+        this.nluLUIS_endpoint = options.nluLUIS_endpoint;
+        this.nluLUIS_appId = options.nluLUIS_appId;
+        this.nluLUIS_subscriptionKey = options.nluLUIS_subscriptionKey;
+        this.nluDialogflow_clientToken = options.nluDialogflow_clientToken;
+        this.nluDialogflow_projectId = options.nluDialogflow_projectId;
+        this.nluDialogflow_privateKey = options.nluDialogflow_privateKey;
+        this.nluDialogflow_clientEmail = options.nluDialogflow_clientEmail;
+        this.neo4j_url = options.neo4j_url;
+        this.neo4j_user = options.neo4j_user;
+        this.neo4j_password = options.neo4j_password;
 
-        this._timestamp = data.timestamp;
+        this._timestamp = options.timestamp || 0;
     }
 
     get json(): any {
@@ -129,6 +133,14 @@ export default class AppSettings extends EventEmitter {
                 });
             }
         });
+    }
+
+    replacer(key: string, value: any): any {
+        if (key == "nluDialogflow_privateKey") {
+            return value;
+        } else {
+            return value;
+        }
     }
 
     save(cb: any){

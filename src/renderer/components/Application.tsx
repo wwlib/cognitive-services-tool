@@ -31,9 +31,9 @@ export interface ApplicationState {
 
 export default class Application extends React.Component < ApplicationProps, ApplicationState > {
 
-    public dialogflowControllerV1 = new DialogflowControllerV1();
-    public dialogflowControllerV2 = new DialogflowControllerV2();
-    public luisController = new LUISController();
+    public dialogflowControllerV1: DialogflowControllerV1;
+    public dialogflowControllerV2: DialogflowControllerV2;
+    public luisController: LUISController;
     public sessionId: string = `app_${Math.floor(Math.random() * 10000)}`;
 
     componentWillMount() {
@@ -47,9 +47,7 @@ export default class Application extends React.Component < ApplicationProps, App
     componentDidMount() {
         // console.log(`Application: componentDidMount`);
         WindowComponent.addWindowWithId('appSettingsPanel', 200, 130); //TODO magic number
-        this.dialogflowControllerV1.config = this.props.model.appSettings;
-        this.dialogflowControllerV2.config = this.props.model.appSettings;
-        this.luisController.config = this.props.model.appSettings;
+        this.instantiateNLUControllers();
     }
 
     onTopNavClick(event: any): void {
@@ -60,6 +58,19 @@ export default class Application extends React.Component < ApplicationProps, App
                 this.setState({showAppSettingsPanel: true});
                 break;
         }
+    }
+
+    //// AppSettings
+
+    ////TODO provide service-specific control
+    instantiateNLUControllers(): void {
+        this.dialogflowControllerV1 = new DialogflowControllerV1();
+        this.dialogflowControllerV2 = new DialogflowControllerV2();
+        this.luisController = new LUISController();
+
+        this.dialogflowControllerV1.config = this.props.model.appSettings;
+        this.dialogflowControllerV2.config = this.props.model.appSettings;
+        this.luisController.config = this.props.model.appSettings;
     }
 
     onAppSettingsClick(event: any): void {
@@ -74,9 +85,17 @@ export default class Application extends React.Component < ApplicationProps, App
                 break;
             case 'saveSettings':
                 this.props.model.saveAppSettings();
+                this.instantiateNLUControllers();
+                WindowComponent.closeWithId('appSettingsPanel');
+                this.setState({showAppSettingsPanel: false});
                 break;
             case 'reloadSettings':
-                this.props.model.reloadAppSettings();
+                this.props.model.reloadAppSettings()
+                    .then((obj: any) => {
+                        this.instantiateNLUControllers();
+                        let appSettings: AppSettings = this.props.model.appSettings;
+                        this.setState({appSettings: appSettings});
+                    })
                 break;
             case 'showSettings':
                 if (this.props.model.appSettings.userDataPath) {
@@ -111,8 +130,15 @@ export default class Application extends React.Component < ApplicationProps, App
                 appSettings.nluDialogflow_projectId = nativeEvent.target.value;
                 break;
             case 'nluDialogflow_privateKey':
-                appSettings.nluDialogflow_privateKey = nativeEvent.target.value;
-                break;
+                //NOTE parsing the key fixes newline issues
+                try {
+                    let keyData = JSON.parse(`{ "key": "${nativeEvent.target.value}"}`);
+                    appSettings.nluDialogflow_privateKey = keyData.key;
+                    break;
+                } catch(err) {
+                    console.log(err);
+                }
+
             case 'nluDialogflow_clientEmail':
                 appSettings.nluDialogflow_clientEmail = nativeEvent.target.value;
                 break;
