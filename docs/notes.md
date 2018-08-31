@@ -23,7 +23,16 @@
   - npm rebuild --runtime=electron --target=1.8.4 --disturl=https://atom.io/download/electron
   - npm rebuild --runtime=electron --target=2.0.5 --disturl=https://atom.io/download/electron
 
+#### google speech api
+- https://cloud.google.com/speech-to-text/docs/quickstart-client-libraries#client-libraries-install-nodejs
+- https://github.com/googleapis/nodejs-speech/tree/master/samples
+- https://github.com/googleapis/nodejs-speech/blob/master/src/v1/speech_client.js#L34
+- https://github.com/googleapis/nodejs-vision/issues/120
+- https://github.com/ropensci/googleLanguageR/issues/34
+- https://codelabs.developers.google.com/codelabs/speaking-with-a-webpage/index.html?index=..%2F..%2Findex#6
 
+#### Audio
+- sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer audio.raw audio.wav
 
 #### Misc
 - https://www.npmjs.com/package/concurrently

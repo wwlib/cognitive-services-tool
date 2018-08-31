@@ -19,10 +19,16 @@ export default class ASRPanel extends React.Component<ASRPanelProps, ASRPanelSta
 
     render() {
         return (
-            <div className="app-panel well" id="asrPanel" onClick={this.onButtonClicked.bind(this)} >
-                <div>
-                    ASR
-                </div>
+            <div className="app-panel well" id="asrPanel" onClick={this.onButtonClicked.bind(this)}>
+                <ReactBootstrap.Table condensed hover style = {{width: '100%'}}>
+                    <tbody>
+                        <tr><td>ASR:</td></tr>
+                        <tr><td>
+                            <button id="recordButton"></button>
+                            <button id="endRecordButton"></button>
+                        </td></tr>
+                    </tbody>
+                </ReactBootstrap.Table>
             </div>
         );
     }

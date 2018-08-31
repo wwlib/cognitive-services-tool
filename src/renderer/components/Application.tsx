@@ -18,6 +18,8 @@ import LUISController from '../luis/LUISController';
 import DialogflowControllerV1 from '../dialogflow/DialogflowControllerV1';
 import DialogflowControllerV2 from '../dialogflow/DialogflowControllerV2';
 
+import GoogleSTTController from '../googlecloud/GoogleSTTController';
+
 const prettyjson = require('prettyjson');
 const {dialog, shell} = require('electron').remote;
 
@@ -256,6 +258,17 @@ export default class Application extends React.Component < ApplicationProps, App
                 //     .catch((err: any) => {
                 //         console.log(`ERROR: dialogflowController\n`, err)
                 //     });
+                break;
+            case 'asrPanel':
+                console.log(`asrPanel`);
+                let sttController:GoogleSTTController = new GoogleSTTController();
+                console.log(sttController);
+                break;
+            case 'recordButton':
+                this.props.model.startRecord();
+                break;
+            case 'endRecordButton':
+                this.props.model.endRecord();
                 break;
             case 'clearLog':
                 this.setState({ log: '' })
