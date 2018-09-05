@@ -204,29 +204,16 @@ describe('GoogleSpeechWordTimingAdjuster', () => {
 
     it('ops should deep equal [2,2,2,2]', () => {
         let googleSTTWordTimingAdjuster = new GoogleSTTWordTimingAdjuster(googleWordsSimple, actualTextSimple);
-        // let googleWords: string[] = 'once upon a time'.split(' ');
-        // let realWords: string[] = 'once upon a time'.split(' ');
-        // let ops: any = googleSTTWordTimingAdjuster.runMinEditDistance(googleWords, realWords);
-        console.log(`ops: `, googleSTTWordTimingAdjuster.ops);
         expect(googleSTTWordTimingAdjuster.ops).to.deep.equal([2,2,2,2]);
     });
 
     it('ops should deep equal [2,2,2,1,2]', () => {
         let googleSTTWordTimingAdjuster = new GoogleSTTWordTimingAdjuster(googleWordsSimple, 'once upon a moon time');
-        // let googleWords: string[] = 'once upon a moon time'.split(' ');
-        // let realWords: string[] = 'once upon a time'.split(' ');
-        // let ops: any = googleSTTWordTimingAdjuster.runMinEditDistance(googleWords, realWords);
-        console.log(`ops: `, googleSTTWordTimingAdjuster.ops);
         expect(googleSTTWordTimingAdjuster.ops).to.deep.equal([2,2,2,1,2]);
     });
 
     it('transformResult should equal expectedResult', () => {
         let googleSTTWordTimingAdjuster = new GoogleSTTWordTimingAdjuster(googleWordsSimple, 'once upon a time');
-        // let googleWords: string[] = 'once upon a moon time'.split(' ');
-        // let realWords: string[] = 'once upon a time'.split(' ');
-        // let ops: any = googleSTTWordTimingAdjuster.runMinEditDistance(googleWords, realWords);
-        console.log(`ops: `, googleSTTWordTimingAdjuster.ops);
-        console.log(`transformResult: `, googleSTTWordTimingAdjuster.transformResult);
         let expectedResult: any = {
             result:
                 [ [ 0, 0.7, 1.2 ],
@@ -241,11 +228,6 @@ describe('GoogleSpeechWordTimingAdjuster', () => {
 
     it('transformResult should equal expectedResult', () => {
         let googleSTTWordTimingAdjuster = new GoogleSTTWordTimingAdjuster(googleWordsSimple, 'once upon a moon time');
-        // let googleWords: string[] = 'once upon a moon time'.split(' ');
-        // let realWords: string[] = 'once upon a time'.split(' ');
-        // let ops: any = googleSTTWordTimingAdjuster.runMinEditDistance(googleWords, realWords);
-        console.log(`ops: `, googleSTTWordTimingAdjuster.ops);
-        console.log(`transformResult: `, googleSTTWordTimingAdjuster.transformResult);
         let expectedResult: any = {
             result:
                 [ [ 0, 0.7, 1.2 ],
@@ -270,7 +252,7 @@ describe('GoogleSpeechWordTimingAdjuster', () => {
             should_trim_audio: false,
             trimmed_end_time: undefined
         }
-        console.log( googleSTTWordTimingAdjuster.alignedWords);
+        // console.log( googleSTTWordTimingAdjuster.alignedWords);
         expect(googleSTTWordTimingAdjuster.alignedWords ).to.deep.equal(expectedResult);
     });
 
