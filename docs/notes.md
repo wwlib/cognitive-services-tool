@@ -30,6 +30,7 @@
 - https://github.com/googleapis/nodejs-vision/issues/120
 - https://github.com/ropensci/googleLanguageR/issues/34
 - https://codelabs.developers.google.com/codelabs/speaking-with-a-webpage/index.html?index=..%2F..%2Findex#6
+- https://cloud.google.com/speech-to-text/docs/encoding
 
 #### Audio
 - sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer audio.raw audio.wav
