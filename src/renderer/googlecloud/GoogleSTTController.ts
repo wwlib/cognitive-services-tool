@@ -87,7 +87,7 @@ export default class GoogleSTTController {
         this.client = new speech.SpeechClient(options);
 
         // The name of the audio file to transcribe
-        this.fileName = './assets/audio.raw';
+        this.fileName =  './assets/audio.raw'; // './assets/onceuponatime.wav';
 
         // Reads a local audio file and converts it to base64
         this.file = fs.readFileSync(this.fileName);
@@ -101,6 +101,7 @@ export default class GoogleSTTController {
           encoding: 'LINEAR16',
           sampleRateHertz: 16000,
           languageCode: 'en-US',
+          enableWordTimeOffsets: true
         };
         const request = {
           audio: audio,
@@ -110,8 +111,12 @@ export default class GoogleSTTController {
         // Detects speech in the audio file
         this.client
           .recognize(request)
+          // .longRunningRecognize(request)
           .then(data => {
+              console.log(data);
             const response = data[0];
+            const words = response.results[0].alternatives[0].words;
+            console.log(JSON.stringify(words, null, 2));
             const transcription = response.results
               .map(result => result.alternatives[0].transcript)
               .join('\n');
