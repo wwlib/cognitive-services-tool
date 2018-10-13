@@ -252,7 +252,7 @@ describe('GoogleSpeechWordTimingAdjuster', () => {
             should_trim_audio: false,
             trimmed_end_time: undefined
         }
-        // console.log( googleSTTWordTimingAdjuster.alignedWords);
+        console.log( googleSTTWordTimingAdjuster.alignedWords);
         expect(googleSTTWordTimingAdjuster.alignedWords ).to.deep.equal(expectedResult);
     });
 

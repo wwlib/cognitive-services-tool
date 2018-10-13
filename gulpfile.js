@@ -8,7 +8,7 @@ gulp.task("typedoc", function() {
             module: "commonjs",
             target: "es6",
             out: "docs/typedoc",
-            name: "react-storybook-author"
+            name: "cognitive-services-tool"
         }))
     ;
 });

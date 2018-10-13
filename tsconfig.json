@@ -12,9 +12,6 @@
       "*": ["node_modules/*"]
     }
   },
-  "hide-include": [
-    "src/testDialogflowController.ts"
-    ],
   "include": [
     "src/**/*"
   ]
