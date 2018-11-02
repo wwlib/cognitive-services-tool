@@ -43,7 +43,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "@google-cloud/speech": "^2.0.0",
+    "@google-cloud/speech": "^2.1.1",
     "blob-to-buffer": "^1.2.8",
     "classnames": "^2.2.6",
     "defaultcss": "^1.1.1",

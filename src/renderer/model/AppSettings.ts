@@ -29,7 +29,7 @@ export interface AppSettingsOptions {
 
 export default class AppSettings extends EventEmitter {
 
-    static DEFAULT_USER_DATA_PATH: string = path.resolve(configPath, "user");
+    // static DEFAULT_USER_DATA_PATH: string = path.resolve(configPath, "user");
     static NLU_OPTIONS: any[] = [
         {value: 'none', label: 'none'},
         {value: 'luis', label: 'LUIS'},
@@ -37,24 +37,32 @@ export default class AppSettings extends EventEmitter {
         {value: 'dialogflowv2', label: 'DialogflowV2'},
     ]
 
-    public nluDefault: NLUSetting | undefined = {value: 'none', label: 'none'};
-    public nluLUIS_endpoint: string | undefined = '';
-    public nluLUIS_appId: string | undefined = '';
-    public nluLUIS_subscriptionKey: string | undefined = '';
-    public nluDialogflow_clientToken: string | undefined = '';
-    public nluDialogflow_projectId: string | undefined = '';
-    public nluDialogflow_privateKey: string | undefined = '';
-    public nluDialogflow_clientEmail: string | undefined = '';
+    public nluDefault: NLUSetting = {value: 'none', label: 'none'};
+    public nluLUIS_endpoint: string = '';
+    public nluLUIS_appId: string = '';
+    public nluLUIS_subscriptionKey: string = '';
+    public nluDialogflow_clientToken: string = '';
+    public nluDialogflow_projectId: string = '';
+    public nluDialogflow_privateKey: string = '';
+    public nluDialogflow_clientEmail: string = '';
 
-    public neo4j_url: string | undefined = '';
-    public neo4j_user: string | undefined = '';
-    public neo4j_password: string | undefined = '';
+    public neo4j_url: string = '';
+    public neo4j_user: string = '';
+    public neo4j_password: string = '';
 
     private _timestamp: number = 0;
 
     constructor(options?: AppSettingsOptions) {
         super();
         this.initWithData(options);
+    }
+
+    static get userDataPath(): string {
+        return path.resolve(configPath, "user");
+    }
+
+    static get userAudioDataPath(): string {
+        return path.resolve(configPath, "user/audio");
     }
 
     initWithData(options?: AppSettingsOptions): void {
@@ -76,17 +84,17 @@ export default class AppSettings extends EventEmitter {
         options = Object.assign(defaultOptions, options);
 
         console.log(`AppSettings: initWithData: `, options);
-        this.nluDefault = options.nluDefault;
-        this.nluLUIS_endpoint = options.nluLUIS_endpoint;
-        this.nluLUIS_appId = options.nluLUIS_appId;
-        this.nluLUIS_subscriptionKey = options.nluLUIS_subscriptionKey;
-        this.nluDialogflow_clientToken = options.nluDialogflow_clientToken;
-        this.nluDialogflow_projectId = options.nluDialogflow_projectId;
-        this.nluDialogflow_privateKey = options.nluDialogflow_privateKey;
-        this.nluDialogflow_clientEmail = options.nluDialogflow_clientEmail;
-        this.neo4j_url = options.neo4j_url;
-        this.neo4j_user = options.neo4j_user;
-        this.neo4j_password = options.neo4j_password;
+        this.nluDefault = options.nluDefault || {value: 'none', label: 'none'};
+        this.nluLUIS_endpoint = options.nluLUIS_endpoint || '';
+        this.nluLUIS_appId = options.nluLUIS_appId || '';
+        this.nluLUIS_subscriptionKey = options.nluLUIS_subscriptionKey || '';
+        this.nluDialogflow_clientToken = options.nluDialogflow_clientToken || '';
+        this.nluDialogflow_projectId = options.nluDialogflow_projectId || '';
+        this.nluDialogflow_privateKey = options.nluDialogflow_privateKey || '';
+        this.nluDialogflow_clientEmail = options.nluDialogflow_clientEmail || '';
+        this.neo4j_url = options.neo4j_url || '';
+        this.neo4j_user = options.neo4j_user || '';
+        this.neo4j_password = options.neo4j_password || '';
 
         this._timestamp = options.timestamp || 0;
     }
@@ -111,10 +119,6 @@ export default class AppSettings extends EventEmitter {
 
     get timestamp(): number {
         return this._timestamp;
-    }
-
-    get userDataPath(): string {
-        return AppSettings.DEFAULT_USER_DATA_PATH;
     }
 
     load(cb: any){

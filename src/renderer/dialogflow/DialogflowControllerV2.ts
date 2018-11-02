@@ -158,7 +158,7 @@ export default class DialogflowControllerV2 extends NLUController {
           this.call(query, languageCode, context, sessionId)
               .then((response: DialogflowV2Response) => {
                   let intentAndEntities: NLUIntentAndEntities = {
-                      intent: response.intent.displayName,
+                      intent: response.intent ? response.intent.displayName : '',
                       entities: this.getEntitiesWithResponse(response),
                       result: response
                   }

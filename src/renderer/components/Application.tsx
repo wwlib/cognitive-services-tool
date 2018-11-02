@@ -10,6 +10,7 @@ import NLUPanel from './NLUPanel';
 import TTSPanel from './TTSPanel';
 import GraphPanel from './GraphPanel';
 import LogPanel from './LogPanel';
+import { AudioFileInfo } from '../audio/AudioManager';
 
 import NLUController, {
     NLUIntentAndEntities, NLUData
@@ -18,7 +19,7 @@ import LUISController from '../luis/LUISController';
 import DialogflowControllerV1 from '../dialogflow/DialogflowControllerV1';
 import DialogflowControllerV2 from '../dialogflow/DialogflowControllerV2';
 
-import GoogleSTTController from '../googlecloud/GoogleSTTController';
+import GoogleSTTController, { ClientConfig, GoogleSTTControllerOptions, GoogleSTTResponse } from '../googlecloud/GoogleSTTController';
 
 const prettyjson = require('prettyjson');
 const {dialog, shell} = require('electron').remote;
@@ -27,6 +28,7 @@ export interface ApplicationProps { model: Model }
 export interface ApplicationState {
     showAppSettingsPanel: boolean,
     appSettings: AppSettings,
+    ASRResult: string,
     NLUResult: string,
     log: string
 }
@@ -41,6 +43,7 @@ export default class Application extends React.Component < ApplicationProps, App
     componentWillMount() {
         this.setState({
             showAppSettingsPanel: false,
+            ASRResult: '',
             NLUResult: '',
             log: ''
          });
@@ -100,8 +103,8 @@ export default class Application extends React.Component < ApplicationProps, App
                     })
                 break;
             case 'showSettings':
-                if (this.props.model.appSettings.userDataPath) {
-                    shell.showItemInFolder(this.props.model.appSettings.userDataPath);
+                if (AppSettings.userDataPath) {
+                    shell.showItemInFolder(AppSettings.userDataPath);
                 }
                 break;
         }
@@ -178,7 +181,7 @@ export default class Application extends React.Component < ApplicationProps, App
     }
 
     getIntent(asr: string, contexts: string[], nluType: string): Promise<NLUData> {
-        console.log(`Model: getIntent: asr: ${asr}, contexts: `, contexts, nluType);
+        console.log(`Application: getIntent: asr: ${asr}, contexts: `, contexts, nluType);
         return new Promise((resolve, reject) => {
             let query: string = asr;
             let nluController: NLUController | undefined = undefined;
@@ -204,7 +207,7 @@ export default class Application extends React.Component < ApplicationProps, App
                            asr: asr,
                            intentAndEntities: intentAndEntities
                        }
-                       console.log(`Model: getIntent: nluData`, nluData);
+                       console.log(`Application: getIntent: nluData`, nluData);
                        resolve(nluData);
                     })
                     .catch((err: any) => {
@@ -221,7 +224,7 @@ export default class Application extends React.Component < ApplicationProps, App
                     }
 
                 }
-                console.log(`Model: getIntent: NO NLU DEFINED: nluData`, nluData);
+                console.log(`Application: getIntent: NO NLU DEFINED: nluData`, nluData);
                 resolve(nluData)
             }
         });
@@ -241,14 +244,14 @@ export default class Application extends React.Component < ApplicationProps, App
                         if (nluData && nluData.intentAndEntities) {
                             let launchIntent: string = nluData.intentAndEntities.intent;
                             let entities: string = prettyjson.render(nluData.intentAndEntities.entities, { noColor: true });
-                            console.log(`Model: onASR result: launchIntent`, launchIntent, entities, nluData);
+                            console.log(`Application: on NLU result: launchIntent`, launchIntent, entities, nluData);
                             console.log(nluData.intentAndEntities.entities, entities);
                             let resultFormatted: string = prettyjson.render(nluData.intentAndEntities.result, { noColor: true });
                             this.setState({ NLUResult: `${launchIntent}\n${entities}`, log: `${resultFormatted}\n\n****\n\n${this.state.log}` });
                         }
                     })
                     .catch((err: any) => {
-                        console.log(`Model: onASR: error: `, err);
+                        console.log(`Application: on NLU: error: `, err);
                     });
 
                 // this.dialogflowControllerV2.call('what time is it', 'en-US', 'launch', this.sessionId)
@@ -261,18 +264,47 @@ export default class Application extends React.Component < ApplicationProps, App
                 break;
             case 'asrPanel':
                 console.log(`asrPanel`);
-                let sttController:GoogleSTTController = new GoogleSTTController();
-                console.log(sttController);
+                this.processAudio('./assets/onceuponatime.wav');
                 break;
             case 'recordButton':
                 this.props.model.startRecord();
                 break;
             case 'endRecordButton':
-                this.props.model.endRecord();
+                this.props.model.endRecord()
+                    .then((audioFileInfo: AudioFileInfo) => {
+                        // this.props.model.onAudioFileSaved(audioFileInfo);
+                        this.processAudio(audioFileInfo.filepath);
+                    })
+                    .catch((err: any) => {
+                        console.log(err);
+                    })
                 break;
             case 'clearLog':
                 this.setState({ log: '' })
         }
+    }
+
+    processAudio(audioFilename: string): void {
+        let options: GoogleSTTControllerOptions = {
+            audioFilename: audioFilename
+        }
+        let clientConfig: ClientConfig = {
+            credentials: {
+                private_key: this.props.model.appSettings.nluDialogflow_privateKey,
+                client_email: this.props.model.appSettings.nluDialogflow_clientEmail
+            },
+            projectId: this.props.model.appSettings.nluDialogflow_projectId
+        }
+        let sttController:GoogleSTTController = new GoogleSTTController(clientConfig, options);
+        sttController.processAudioFile()
+            .then((response: GoogleSTTResponse) => {
+                let resultFormatted: string = prettyjson.render(response.words, { noColor: true });
+                this.setState({ ASRResult: response.transcript, log: `${resultFormatted}\n\n****\n\n${this.state.log}` });
+
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     layout(): any {
@@ -282,7 +314,7 @@ export default class Application extends React.Component < ApplicationProps, App
             <TopNav  clickHandler={this.onTopNavClick.bind(this)} />
             {appSettingsPanel}
             <div className="panelContainer">
-                <ASRPanel clickHandler={this.onPanelClick.bind(this)}/>
+                <ASRPanel clickHandler={this.onPanelClick.bind(this)} ASRResult={this.state.ASRResult} />
                 <NLUPanel clickHandler={this.onPanelClick.bind(this)} dropdownHandler={this.onDropdownChange.bind(this)} appSettings={this.props.model.appSettings} NLUResult={this.state.NLUResult}/>
                 <TTSPanel clickHandler={this.onPanelClick.bind(this)}/>
                 <GraphPanel clickHandler={this.onPanelClick.bind(this)}/>

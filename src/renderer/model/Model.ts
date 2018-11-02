@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import AppSettings from "./AppSettings";
 import { appVersion } from './AppVersion';
-import AudioManager from '../audio/AudioManager';
+import AudioManager, { AudioFileInfo } from '../audio/AudioManager';
 
 const uuidv4 = require('uuid/v4');
 const now = require("performance-now");
@@ -16,7 +16,7 @@ export default class Model extends EventEmitter {
         super();
         this.appSettings = new AppSettings();
         this.panelZIndexMap = new Map<string, number>();
-        AudioManager.Instance({ userDataPath: AppSettings.DEFAULT_USER_DATA_PATH });
+        AudioManager.Instance({ userAudioDataPath: AppSettings.userAudioDataPath });
         this.statusMessages = '';
         this.appSettings.load((err: any, obj: any) => {
             if (err) {
@@ -30,9 +30,9 @@ export default class Model extends EventEmitter {
         return appVersion;
     }
 
-    get userDataPath(): string {
-        return AppSettings.DEFAULT_USER_DATA_PATH;
-    }
+    // get userDataPath(): string {
+    //     return AppSettings.DEFAULT_USER_DATA_PATH;
+    // }
 
     saveAppSettings(): void {
         this.appSettings.save((err: any) => {
@@ -76,8 +76,8 @@ export default class Model extends EventEmitter {
         AudioManager.Instance().startRecord();
     }
 
-    endRecord() {
-        AudioManager.Instance().endRecord();
+    endRecord(): Promise<AudioFileInfo> {
+        return AudioManager.Instance().endRecord();
     }
 
     static getUUID(): string {
